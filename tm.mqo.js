@@ -7,7 +7,6 @@
         init: function(path) {
             this.superInit();
             this.mesh = null;
-
         },
 
         // URLÇ©ÇÁÉçÅ[Éh
