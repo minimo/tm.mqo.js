@@ -4,26 +4,30 @@
     tm.define("tm.asset.MQO", {
         superClass: "tm.event.EventDispatcher",
 
+        model: null,
+
         init: function(path) {
             this.superInit();
-            this.mesh = null;
+            this.loadFromURL(path);
         },
 
         // URLからロード
         loadFromURL: function(path) {
+            var that = this;
             _modelurl = path.split("/");
             var req = new XMLHttpRequest();
-            req.open("GET", url, true);
-            req.onload = function(){
+            req.open("GET", path, true);
+            req.onload = function() {
                 var data = req.responseText;
-                self.loadFromData(data, onload);
+                that.loadFromData(data);
             };
             req.send(null);
         },
 
         //データからロード
-        loadFromData: function(data, onload) {
-            var model = tm.MQOModel(data);
+        loadFromData: function(data) {
+            this.model = tm.MQOModel(data);
+            this.flare("load");
         },
     });
 
@@ -48,17 +52,17 @@
 
         parse: function(data) {
             // オブジェクト
-            var objectText = text.match(/^Object [\s\S]*?^\}/gm);
+            var objectText = data.match(/^Object [\s\S]*?^\}/gm);
             for (var i = 0, len = objectText.length; i < len; ++i) {
-                var mesh = tm.MqoMesh(objectText[i]);
+                var mesh = tm.MQOMesh(objectText[i]);
                 this.meshes.push(mesh);
             }
 
             // マテリアル
-            var materialText = text.match(/^Material [\s\S]*?^\}/m);
+            var materialText = data.match(/^Material [\s\S]*?^\}/m);
             for (var i = 0, len = materialText.length; i < len; ++i) {
-                var material = tm.MqoMaterial(materialText[i]);
-                this.materials.phsh(material);
+                var material = tm.MQOMaterial(materialText[i]);
+                this.materials.push(material);
             }
         },
 
