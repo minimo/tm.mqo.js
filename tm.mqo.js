@@ -44,7 +44,7 @@
         meshes: [],
 
         //マテリアルアレイ
-        materials: [],
+        materials: null,
         
         init: function(data) {
             this.parse(data);
@@ -60,10 +60,7 @@
 
             // マテリアル
             var materialText = data.match(/^Material [\s\S]*?^\}/m);
-            for (var i = 0, len = materialText.length; i < len; ++i) {
-                var material = tm.MQOMaterial(materialText[i]);
-                this.materials.push(material);
-            }
+            this.materials = tm.MQOMaterial(materialText[i]);
         },
 
         convert: function(){
@@ -274,12 +271,15 @@
     });
 
     tm.define("tm.MQOMaterial", {
-        init: function(text) {
+        materials: [],
+
+        init: function(data) {
+            this.parse(data);
         },
 
         //マテリアル情報のパース
-        parse: function(text) {
-            var infoText    = text.match(/^Material [0-9]* \{\r\n([\s\S]*?)\n^\}$/m);
+        parse: function(data) {
+            var infoText    = data.match(/^Material [0-9]* \{\r\n([\s\S]*?)\n^\}$/m);
             var matTextList = infoText[1].split('\n');
 
             for (var i = 0, len = matTextList.length; i < len; i++) {
@@ -308,8 +308,10 @@
                     }
                     mat[key] = value;
                 }
-                this.materialList.push(mat);
+                this.materials.push(mat);
             }
+        },
+        convert: function() {
         },
     });
 

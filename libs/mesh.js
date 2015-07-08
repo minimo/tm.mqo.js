@@ -13,9 +13,13 @@
 
         init: function(mesh) {
             if (typeof(mesh) === "string") {
-                var threeJSON = tm.asset.Manager.get(mesh);
-                if (threeJSON) {
-                    this.superInit(threeJSON.mesh.clone());
+                var asset = tm.asset.Manager.get(mesh);
+                if (asset) {
+                    if (asset instanceof tm.asset.ThreeJSON) {
+                        this.superInit(asset.mesh.clone());
+                    } else if (asset instanceof tm.asset.MQO) {
+                        this.superInit(asset.mesh.clone());
+                    }
                 } else {
                     console.error("アセット'{0}'がないよ".format(mesh));
                 }
