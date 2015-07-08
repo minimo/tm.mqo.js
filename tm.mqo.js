@@ -9,7 +9,7 @@
             this.mesh = null;
         },
 
-        // URL‚©‚çƒ[ƒh
+        // URLã‹ã‚‰ãƒ­ãƒ¼ãƒ‰
         loadFromURL: function(path) {
             _modelurl = path.split("/");
             var req = new XMLHttpRequest();
@@ -21,23 +21,25 @@
             req.send(null);
         },
 
-        //ƒf[ƒ^‚©‚çƒ[ƒh
+        //ãƒ‡ãƒ¼ã‚¿ã‹ã‚‰ãƒ­ãƒ¼ãƒ‰
         loadFromData: function(data, onload) {
             var model = tm.MQOModel(data);
         },
     });
 
-    //ƒ[ƒ_[‚ÉŠg’£q“o˜^
+    //ãƒ­ãƒ¼ãƒ€ãƒ¼ã«æ‹¡å¼µå­ç™»éŒ²
     tm.asset.Loader.register("mqo", function(path) {
         return tm.asset.MQO(path);
     });
 
-    //ƒƒ^ƒZƒRƒCƒAƒ‚ƒfƒ‹
+    /*
+     * ãƒ¡ã‚¿ã‚»ã‚³ã‚¤ã‚¢ãƒ¢ãƒ‡ãƒ«
+     */
     tm.define("tm.MQOModel", {
-        //ƒƒbƒVƒ…ƒAƒŒƒC
+        //ãƒ¡ãƒƒã‚·ãƒ¥ã‚¢ãƒ¬ã‚¤
         meshes: [],
 
-        //ƒ}ƒeƒŠƒAƒ‹ƒAƒŒƒC
+        //ãƒãƒ†ãƒªã‚¢ãƒ«ã‚¢ãƒ¬ã‚¤
         materials: [],
         
         init: function(data) {
@@ -45,14 +47,14 @@
         },
 
         parse: function(data) {
-            // ƒIƒuƒWƒFƒNƒg
+            // ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
             var objectText = text.match(/^Object [\s\S]*?^\}/gm);
             for (var i = 0, len = objectText.length; i < len; ++i) {
                 var mesh = tm.MqoMesh(objectText[i]);
                 this.meshes.push(mesh);
             }
 
-            // ƒ}ƒeƒŠƒAƒ‹
+            // ãƒãƒ†ãƒªã‚¢ãƒ«
             var materialText = text.match(/^Material [\s\S]*?^\}/m);
             for (var i = 0, len = materialText.length; i < len; ++i) {
                 var material = tm.MqoMaterial(materialText[i]);
@@ -65,85 +67,56 @@
     });
 
     tm.define("tm.MQOMesh", {
-        vertices: [],   // ’¸“_
-        faces: [],      // –Êî•ñ
-        vertNormals: [],// ’¸“_–@ü
+        vertices: [],   // é ‚ç‚¹
+        faces: [],      // é¢æƒ…å ±
+        vertNormals: [],// é ‚ç‚¹æ³•ç·š
         
-        facet: 59.5,    // ƒXƒ€[ƒWƒ“ƒOŠp“x
+        facet: 59.5,    // ã‚¹ãƒ ãƒ¼ã‚¸ãƒ³ã‚°è§’åº¦
 
-        mirror: 0,      //ƒ~ƒ‰[ƒŠƒ“ƒO
-        mirrorAxis: 0,  //ƒ~ƒ‰[ƒŠƒ“ƒO²
+        mirror: 0,      //ãƒŸãƒ©ãƒ¼ãƒªãƒ³ã‚°
+        mirrorAxis: 0,  //ãƒŸãƒ©ãƒ¼ãƒªãƒ³ã‚°è»¸
 
         init: function(text) {
             this.parse(text);
         },
 
         parse:function(text){
-            //ƒIƒuƒWƒFƒNƒg–¼
+            //ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆå
             var name = text.split(' ');
             this.name = name[1].replace(/"/g, "");
 
-            //ƒXƒ€[ƒWƒ“ƒOŠp
+            //ã‚¹ãƒ ãƒ¼ã‚¸ãƒ³ã‚°è§’
             var facet = text.match(/facet ([0-9\.]+)/);
             if( facet ){ this.facet = Number(facet[1]); }
 
-            //‰Â‹ƒtƒ‰ƒO
+            //å¯è¦–ãƒ•ãƒ©ã‚°
             var visible = text.match(/visible ([0-9\.]+)/);
             if( visible ){ this.visible = Number(visible[1]); }
 
-            //ƒ~ƒ‰[ƒŠƒ“ƒO
+            //ãƒŸãƒ©ãƒ¼ãƒªãƒ³ã‚°
             var mirror = text.match(/mirror ([0-9])/m);
             if( mirror ){
                 this.mirror = Number(mirror[1]);
-                // ²
+                // è»¸
                 var mirrorAxis = text.match(/mirror_axis ([0-9])/m);
                 if( mirrorAxis ){
                     this.mirrorAxis = Number(mirrorAxis[1]);
                 }
             }
 
-            //’¸“_î•ñ
+            //é ‚ç‚¹æƒ…å ±
             var vertex_txt = text.match(/vertex ([0-9]+).+\{\s([\w\W]+)}$/gm);
             this._parseVertices( RegExp.$1, RegExp.$2 );
 
-            //ƒtƒF[ƒXî•ñ
+            //ãƒ•ã‚§ãƒ¼ã‚¹æƒ…å ±
             var face_txt = text.match(/face ([0-9]+).+\{\s([\w\W]+)}$/gm);
             this._parseFaces( RegExp.$1, RegExp.$2 );
         },
 
-        /**
-         *  ƒƒbƒVƒ…‚ÖƒRƒ“ƒo[ƒg
-         *  root:ƒ‹[ƒgƒIƒuƒWƒFƒNƒg
-         *  materials:ƒ}ƒeƒŠƒAƒ‹ƒŠƒXƒg
-         */
         convert: function(){
-            //•s‰Â‹İ’è‚Ìê‡‚Íˆ—‚ğƒXƒLƒbƒv
-            if( this.visible == 0 ){
-                return;
-            }
-
-            //ƒtƒF[ƒX‚ªg—p‚·‚éƒ}ƒeƒŠƒAƒ‹‚ğ’²‚×‚é
-            var facemat = [];
-            facemat[facemat.length] = this.faces[0].m[0];
-            for (var i = 0, lf = this.faces.length; i < lf; i++ ){
-                var fm = -1;
-                for (var j = 0, lfm = facemat.length; j < lfm; j++ ){
-                    if (facemat[j] != this.faces[i].m[0]) fm = this.faces[i].m[0];
-                }
-                if( fm != -1 )facemat[facemat.length] = fm;
-            }
-
-            var root = tm.hybrid.Mesh(new THREE.Mesh(geo, mat));
-
-            //g—pƒ}ƒeƒŠƒAƒ‹‚É‰‚¶‚ÄƒIƒuƒWƒFƒNƒg‚ğ•ªŠ„•ÏŠ·
-            for( var i = 0; i < facemat.length; i++ ){
-                var matnum = facemat[i];
-                var sp = this.convertWithMaterial(materials.materialList[matnum], matnum);
-                if( sp ) root.addChild(sp);
-            }
         },
 
-        //’¸“_î•ñ‚Ìƒp[ƒX
+        //é ‚ç‚¹æƒ…å ±ã®ãƒ‘ãƒ¼ã‚¹
         _parseVertices: function(num, text) {
             var vertexTextList = text.split('\n');
             for (var i = 1; i <= num; i++) {
@@ -154,7 +127,7 @@
                 this.vertices.push(vertex);
             }
 
-            //ƒ~ƒ‰[ƒŠƒ“ƒO‘Î‰
+            //ãƒŸãƒ©ãƒ¼ãƒªãƒ³ã‚°å¯¾å¿œ
             if (this.mirror) {
                 var self = this;
                 var toMirror = (function(){
@@ -171,11 +144,11 @@
             }
         },
 
-        //ƒtƒF[ƒXî•ñ‚Ìƒp[ƒX
+        //ãƒ•ã‚§ãƒ¼ã‚¹æƒ…å ±ã®ãƒ‘ãƒ¼ã‚¹
         _parseFaces: function(num, text) {
             var faceTextList = text.split('\n');
 
-            //–@üŒvZ
+            //æ³•ç·šè¨ˆç®—
             var calcNormalize = function(a, b, c) {
                 var v1 = [ a[0] - b[0], a[1] - b[1], a[2] - b[2] ];
                 var v2 = [ c[0] - b[0], c[1] - b[1], c[2] - b[2] ];
@@ -193,9 +166,9 @@
             };
 
             for (var i = 1; i <= num; i++ ){
-                // ƒgƒŠƒ€‚Á‚Æ‚­
+                // ãƒˆãƒªãƒ ã£ã¨ã
                 var faceText = faceTextList[i].replace(/^\s+|\s+$/g, "");
-                // –Ê‚Ì”
+                // é¢ã®æ•°
                 var vertex_num = Number(faceText[0]);
 
                 var info = faceText.match(/([A-Za-z]+)\(([\w\s\-\.\(\)]+?)\)/gi);
@@ -211,17 +184,17 @@
                     face[key] = value;
                 }
                 
-                // UV ƒfƒtƒHƒ‹ƒg’l
+                // UV ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤
                 if (!face.uv) {
                     face.uv = [0, 0, 0, 0, 0, 0, 0, 0];
                 }
 
-                // ƒ}ƒeƒŠƒAƒ‹ ƒfƒtƒHƒ‹ƒg’l
+                // ãƒãƒ†ãƒªã‚¢ãƒ« ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤
                 if (!face.m) {
                     face.m = [undefined];
                 }
 
-                // –@üi–Ê‚Ìê‡‚Ì‚İj
+                // æ³•ç·šï¼ˆé¢ã®å ´åˆã®ã¿ï¼‰
                 if (face.v.length > 2) {
                     face.n = calcNormalize(this.vertices[face.v[0]], this.vertices[face.v[1]], this.vertices[face.v[2]]);
                 }
@@ -229,7 +202,7 @@
                 this.faces.push(face);
             }
 
-            // ƒ~ƒ‰[ƒŠƒ“ƒO‘Î‰
+            // ãƒŸãƒ©ãƒ¼ãƒªãƒ³ã‚°å¯¾å¿œ
             if( this.mirror ){
                 var swap = function(a,b){ var temp = this[a]; this[a] = this[b]; this[b] = temp; return this; };
                 var len = this.faces.length;
@@ -258,7 +231,7 @@
                 }
             }
 
-            // ’¸“_–@ü‚ğ‹‚ß‚é
+            // é ‚ç‚¹æ³•ç·šã‚’æ±‚ã‚ã‚‹
             var vertNormal = Array(this.vertices.length);
             for (var i = 0, len = this.vertices.length; i < len; i++) vertNormal[i] = [];
 
@@ -300,33 +273,33 @@
         init: function(text) {
         },
 
-        //ƒ}ƒeƒŠƒAƒ‹î•ñ‚Ìƒp[ƒX
+        //ãƒãƒ†ãƒªã‚¢ãƒ«æƒ…å ±ã®ãƒ‘ãƒ¼ã‚¹
         parse: function(text) {
             var infoText    = text.match(/^Material [0-9]* \{\r\n([\s\S]*?)\n^\}$/m);
             var matTextList = infoText[1].split('\n');
 
             for (var i = 0, len = matTextList.length; i < len; i++) {
                 var mat = {};
-                // ƒgƒŠƒ€‚Á‚Æ‚­
+                // ãƒˆãƒªãƒ ã£ã¨ã
                 var matText = matTextList[i].replace(/^\s+|\s+$/g, "");
-                var info = matText.match(/([A-Za-z]+)\(([\w\W]+?)\)/gi);    //ƒ}ƒeƒŠƒAƒ‹î•ñˆêŒÂ•ª”²‚­
+                var info = matText.match(/([A-Za-z]+)\(([\w\W]+?)\)/gi);    //ãƒãƒ†ãƒªã‚¢ãƒ«æƒ…å ±ä¸€å€‹åˆ†æŠœã
 
-                var nl = matText.split(' ');    //ƒ}ƒeƒŠƒAƒ‹–¼æ“¾
+                var nl = matText.split(' ');    //ãƒãƒ†ãƒªã‚¢ãƒ«åå–å¾—
                 mat['name'] = nl[0].replace(/"/g, "");
 
                 for( var j = 0, len2 = info.length; j < len2; j++ ){
-                    var m = info[j].match(/([A-Za-z]+)\(([\w\W]+?)\)/); //—v‘f‚ğ”²‚«o‚·
-                    var key = m[1].toLowerCase();   //•¶š—ñ¬•¶š‰»
+                    var m = info[j].match(/([A-Za-z]+)\(([\w\W]+?)\)/); //è¦ç´ ã‚’æŠœãå‡ºã™
+                    var key = m[1].toLowerCase();   //æ–‡å­—åˆ—å°æ–‡å­—åŒ–
                     var value = null;
 
                     if( key != "tex" && key != "aplane" ){
-                        //ƒeƒNƒXƒ`ƒƒˆÈŠO‚Ì—v‘f
+                        //ãƒ†ã‚¯ã‚¹ãƒãƒ£ä»¥å¤–ã®è¦ç´ 
                         value = m[2].split(" ");
                         value.forEach(function(elm, i, arr){
                             arr[i] = Number(elm);
                         });
                     }else{
-                        //ƒeƒNƒXƒ`ƒƒ‚Ìê‡
+                        //ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®å ´åˆ
                         value = m[2].replace(/"/g, "");
                     }
                     mat[key] = value;
