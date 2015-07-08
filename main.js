@@ -8,10 +8,12 @@ tm.main(function() {
             // 拡張子による判別がきかないため、typeパラメータをつける
             kirara: {
                 type: "three",
-                url: "./assets/kirara.json",
+                url: "assets/kirara.json",
             },
 
-            hiyoko: "./assets/hiyoco_nomal_full.png",
+            hiyoko: "assets/hiyoco_nomal_full.png",
+
+            gradriel: "assets/gradriel_pose.mqo",
         },
         nextScene: KiraraOnStage,
     }));
