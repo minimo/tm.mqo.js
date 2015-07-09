@@ -47,7 +47,7 @@
         _rawMeshes: [],
 
         //マテリアルアレイ
-        _rawMaterials: [],
+        _rawMaterials: null,
         
         init: function(data) {
             this.parse(data);
@@ -64,17 +64,14 @@
 
             // マテリアル
             var materialText = data.match(/^Material [\s\S]*?^\}/m);
-            for (var i = 0, len = materialText.length; i < len; ++i) {
-                var material = tm.MQOMaterial(materialText[i]);
-                this._rawMaterials.push(material);
-            }
+            this._rawMaterials = tm.MQOMaterial(materialText[0]);       //マテリアルは原則一つ
         },
 
         convert: function(){
             this.meshes = [];
             for (var i = 0, len = this._rawMeshes.length; i < len; i++) {
                 var mesh = this._rawMeshes[i];
-                var list = mesh.convert(this._rawMaterials[0]);
+                var list = mesh.convert(this._rawMaterials);
                 for (var j = 0, len = list.length; j < len; j++) {
                     this.meshes.push(list[j]);
                 }
@@ -141,19 +138,19 @@
             //フェースが使用するマテリアルを調べる
             var facemat = [];
             facemat[facemat.length] = this.faces[0].m[0];
-            for (var i = 0, lf = this.faces.length; i < lf; ++i) {
+            for (var i = 0, lf = this.faces.length; i < lf; i++) {
                 var fm = -1;
-                for( var j=0,lfm=facemat.length; j<lfm; ++j ){
+                for (var j = 0, lfm = facemat.length; j < lfm; j++) {
                     if( facemat[j] != this.faces[i].m[0] )fm = this.faces[i].m[0];
                 }
-                if( fm != -1 )facemat[facemat.length] = fm;
+                if( fm != -1 )facemat.push(fm);
             }
 
             //使用マテリアルに応じてオブジェクトを分割変換
             var meshList = []
             for (var mn = 0; mn < facemat.length; mn++) {
                 var matnum = facemat[mn];
-                var sp = this.build(matnum);
+                var sp = this.build(matnum, materials.materials[matnum]);
                 meshList.push(sp);
             }
             return meshList;
@@ -163,8 +160,38 @@
          * フェース情報からマテリアルに対応した頂点情報を構築
          * THREE形式専用
          */
-        build: function(num) {
-            return null;
+        build: function(num, mqoMat) {
+            //マテリアル情報
+            //シェーダーパラメータによってマテリアルを使い分ける
+            var mat = null;
+            if(mqoMat.shader == 2) {
+                mat = new THREE.MeshLambertMaterial();
+            } else if(mqoMat.shader == 3) {
+                mat = new THREE.MeshPhongMaterial();
+            } else  {
+                mat = new THREE.MeshBasicMaterial();
+            }
+            var r = mqoMat.col[0];
+            var g = mqoMat.col[1];
+            var b = mqoMat.col[2];
+            if (mat.color) mat.color.setRGB(r*mqoMat.dif, g*mqoMat.dif, b*mqoMat.dif);
+            if (mat.emissive) mat.emissive.setRGB(r*mqoMat.emi, g*mqoMat.emi, b*mqoMat.emi);
+            if (mat.ambient) mat.ambient.setRGB(r*mqoMat.amb, g*mqoMat.amb, b*mqoMat.amb);
+            if (mat.specular) mat.specular.setRGB(r*mqoMat.spc, g*mqoMat.spc, b*mqoMat.spc);
+            if (mqoMat.tex) {
+                var texturePath = "assets";
+                mat.map = THREE.ImageUtils.loadTexture(texturePath+"/"+mqoMat.tex);
+            }
+            mat.transparent = true;
+            mat.shiness = mqoMat.power;
+            mat.opacity = mqoMat.col[3]
+
+            //頂点情報
+            var geo = new THREE.Geometry();
+
+            //メッシュ生成
+            var obj = new THREE.Mesh(geo, mat);
+            return obj;
         },
 
         //頂点情報のパース
