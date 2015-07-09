@@ -18,7 +18,7 @@
                     if (asset instanceof tm.asset.ThreeJSON) {
                         this.superInit(asset.mesh.clone());
                     } else if (asset instanceof tm.asset.MQO) {
-                        this.superInit(asset.mesh.clone());
+                        this.superInit(asset.model.meshes[0]);
                     }
                 } else {
                     console.error("アセット'{0}'がないよ".format(mesh));
