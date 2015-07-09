@@ -40,14 +40,18 @@
      * メタセコイアモデル
      */
     tm.define("tm.MQOModel", {
-        //メッシュアレイ
+        //変換後メッシュアレイ
         meshes: [],
 
+        //メッシュアレイ
+        _rawMeshes: [],
+
         //マテリアルアレイ
-        materials: null,
+        _rawMaterials: [],
         
         init: function(data) {
             this.parse(data);
+            this.convert();
         },
 
         parse: function(data) {
@@ -55,18 +59,32 @@
             var objectText = data.match(/^Object [\s\S]*?^\}/gm);
             for (var i = 0, len = objectText.length; i < len; ++i) {
                 var mesh = tm.MQOMesh(objectText[i]);
-                this.meshes.push(mesh);
+                this._rawMeshes.push(mesh);
             }
 
             // マテリアル
             var materialText = data.match(/^Material [\s\S]*?^\}/m);
-            this.materials = tm.MQOMaterial(materialText[i]);
+            for (var i = 0, len = materialText.length; i < len; ++i) {
+                var material = tm.MQOMaterial(materialText[i]);
+                this._rawMaterials.push(material);
+            }
         },
 
         convert: function(){
+            this.meshes = [];
+            for (var i = 0, len = this._rawMeshes.length; i < len; i++) {
+                var mesh = this._rawMeshes[i];
+                var list = mesh.convert(this._rawMaterials[0]);
+                for (var j = 0, len = list.length; j < len; j++) {
+                    this.meshes.push(list[j]);
+                }
+            }
         },
     });
 
+    /*
+     * メタセコイアメッシュ
+     */
     tm.define("tm.MQOMesh", {
         vertices: [],   // 頂点
         faces: [],      // 面情報
@@ -114,7 +132,39 @@
             this._parseFaces( RegExp.$1, RegExp.$2 );
         },
 
-        convert: function(){
+        convert: function(materials){
+            //不可視設定の場合は処理をスキップ
+            if( this.visible == 0 ){
+                return [];  //空の配列を返す
+            }
+
+            //フェースが使用するマテリアルを調べる
+            var facemat = [];
+            facemat[facemat.length] = this.faces[0].m[0];
+            for (var i = 0, lf = this.faces.length; i < lf; ++i) {
+                var fm = -1;
+                for( var j=0,lfm=facemat.length; j<lfm; ++j ){
+                    if( facemat[j] != this.faces[i].m[0] )fm = this.faces[i].m[0];
+                }
+                if( fm != -1 )facemat[facemat.length] = fm;
+            }
+
+            //使用マテリアルに応じてオブジェクトを分割変換
+            var meshList = []
+            for (var mn = 0; mn < facemat.length; mn++) {
+                var matnum = facemat[mn];
+                var sp = this.build(matnum);
+                meshList.push(sp);
+            }
+            return meshList;
+        },
+
+        /*
+         * フェース情報からマテリアルに対応した頂点情報を構築
+         * THREE形式専用
+         */
+        build: function(num) {
+            return null;
         },
 
         //頂点情報のパース
@@ -270,6 +320,9 @@
         },
     });
 
+    /*
+     * メタセコイアマテリアル
+     */
     tm.define("tm.MQOMaterial", {
         materials: [],
 
