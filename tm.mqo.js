@@ -1,6 +1,8 @@
 (function() {
     tm.asset = tm.asset || {};
 
+    _modelPath = "";
+
     tm.define("tm.asset.MQO", {
         superClass: "tm.event.EventDispatcher",
 
@@ -14,7 +16,12 @@
         // URLからロード
         loadFromURL: function(path) {
             var that = this;
-            _modelurl = path.split("/");
+            var modelurl = path.split("/");
+            _modelPath = "";
+            for (var i = 0, len = modelurl.length; i < len-1; i++) {
+                _modelPath += modelurl[i];
+            }
+
             var req = new XMLHttpRequest();
             req.open("GET", path, true);
             req.onload = function() {
@@ -179,15 +186,41 @@
             if (mat.ambient) mat.ambient.setRGB(r*mqoMat.amb, g*mqoMat.amb, b*mqoMat.amb);
             if (mat.specular) mat.specular.setRGB(r*mqoMat.spc, g*mqoMat.spc, b*mqoMat.spc);
             if (mqoMat.tex) {
-                var texturePath = "assets";
-                mat.map = THREE.ImageUtils.loadTexture(texturePath+"/"+mqoMat.tex);
+                mat.map = THREE.ImageUtils.loadTexture(_modelPath+"/"+mqoMat.tex);
             }
             mat.transparent = true;
             mat.shiness = mqoMat.power;
             mat.opacity = mqoMat.col[3]
 
             //頂点情報
+            var scale = 10;
             var geo = new THREE.Geometry();
+            for(var i = 0; i < this.vertices.length; i+=3) {
+                geo.vertices.push(new THREE.Vector3(
+                    this.vertices[i+0]*scale,
+                    this.vertices[i+1]*scale,
+                    this.vertices[i+2]*scale));
+            }
+
+            //インデックス情報
+            for (var i = 0, len = this.faces.length; i < len; i++) {
+                var face = this.faces[i];
+                var vIndex = face.v;
+                var index = geo.vertices.length;
+                if (face.vNum == 3) {
+                    var face3 = new THREE.Face3(vIndex[2], vIndex[1], vIndex[0], undefined, undefined, face.m[0]);
+                    geo.faces.push(face3);
+
+                    //法線
+
+                    // ＵＶ座標
+                    geo.faceVertexUvs[0].push([
+                        new THREE.Vector2(face.uv[4], 1.0 - face.uv[5]),
+                        new THREE.Vector2(face.uv[2], 1.0 - face.uv[3]),
+                        new THREE.Vector2(face.uv[0], 1.0 - face.uv[1])]);
+                } else if (face.vNum == 4) {
+                }
+            }
 
             //メッシュ生成
             var obj = new THREE.Mesh(geo, mat);
