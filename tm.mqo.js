@@ -190,16 +190,16 @@
             }
             mat.transparent = true;
             mat.shiness = mqoMat.power;
-            mat.opacity = mqoMat.col[3]
+            mat.opacity = mqoMat.col[3];
 
             //頂点情報
             var scale = 10;
             var geo = new THREE.Geometry();
             for(var i = 0; i < this.vertices.length; i+=3) {
-                geo.vertices.push(new THREE.Vector3(
-                    this.vertices[i+0]*scale,
-                    this.vertices[i+1]*scale,
-                    this.vertices[i+2]*scale));
+                var x = this.vertices[i][0]*scale;
+                var y = this.vertices[i][1]*scale;
+                var z = this.vertices[i][2]*scale;
+                geo.vertices.push(new THREE.Vector3(x, y, z));
             }
 
             //インデックス情報
@@ -208,10 +208,21 @@
                 var vIndex = face.v;
                 var index = geo.vertices.length;
                 if (face.vNum == 3) {
-                    var face3 = new THREE.Face3(vIndex[2], vIndex[1], vIndex[0], undefined, undefined, face.m[0]);
-                    geo.faces.push(face3);
-
                     //法線
+                    var nx = face.n.x;
+                    var ny = face.n.y;
+                    var nz = face.n.z;
+                    var normal =  new THREE.Vector3(nx, ny, nz);
+
+                    //フェース情報
+                    var face3 = new THREE.Face3(vIndex[2], vIndex[1], vIndex[0], normal, undefined, face.m[0]);
+
+                    //頂点法線
+                    face3.vertexNormals.push(normal);
+                    face3.vertexNormals.push(normal);
+                    face3.vertexNormals.push(normal);
+
+                    geo.faces.push(face3);
 
                     // ＵＶ座標
                     geo.faceVertexUvs[0].push([
@@ -229,12 +240,13 @@
 
         //頂点情報のパース
         _parseVertices: function(num, text) {
+            var scale = 1;
             var vertexTextList = text.split('\n');
             for (var i = 1; i <= num; i++) {
                 var vertex = vertexTextList[i].split(' ');
-                vertex[0] = Number(vertex[0])*0.01;
-                vertex[1] = Number(vertex[1])*0.01;
-                vertex[2] = Number(vertex[2])*0.01;
+                vertex[0] = Number(vertex[0])*scale;
+                vertex[1] = Number(vertex[1])*scale;
+                vertex[2] = Number(vertex[2])*scale;
                 this.vertices.push(vertex);
             }
 
