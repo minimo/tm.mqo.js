@@ -209,9 +209,9 @@
                 var index = geo.vertices.length;
                 if (face.vNum == 3) {
                     //法線
-                    var nx = face.n.x;
-                    var ny = face.n.y;
-                    var nz = face.n.z;
+                    var nx = face.n[0];
+                    var ny = face.n[1];
+                    var nz = face.n[2];
                     var normal =  new THREE.Vector3(nx, ny, nz);
 
                     //フェース情報
@@ -230,6 +230,27 @@
                         new THREE.Vector2(face.uv[2], 1.0 - face.uv[3]),
                         new THREE.Vector2(face.uv[0], 1.0 - face.uv[1])]);
                 } else if (face.vNum == 4) {
+                    //法線
+                    var nx = face.n[0];
+                    var ny = face.n[1];
+                    var nz = face.n[2];
+                    var normal =  new THREE.Vector3(nx, ny, nz);
+
+                    //フェース情報
+                    var face3 = new THREE.Face3(vIndex[2], vIndex[1], vIndex[0], normal, undefined, face.m[0]);
+
+                    //頂点法線
+                    face3.vertexNormals.push(normal);
+                    face3.vertexNormals.push(normal);
+                    face3.vertexNormals.push(normal);
+
+                    geo.faces.push(face3);
+
+                    // ＵＶ座標
+                    geo.faceVertexUvs[0].push([
+                        new THREE.Vector2(face.uv[4], 1.0 - face.uv[5]),
+                        new THREE.Vector2(face.uv[2], 1.0 - face.uv[3]),
+                        new THREE.Vector2(face.uv[0], 1.0 - face.uv[1])]);
                 }
             }
 
