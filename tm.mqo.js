@@ -392,7 +392,7 @@
 
         //マテリアル情報のパース
         parse: function(data) {
-            var infoText    = data.match(/^Material [0-9]* \{\r\n([\s\S]*?)\n^\}$/m);
+            var infoText    = data.match(/^Material [0-9]* \{\r\n([\s\S]*?)\n^\}$/gmi);
             var matTextList = infoText[1].split('\n');
 
             for (var i = 0, len = matTextList.length; i < len; i++) {
