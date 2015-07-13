@@ -45,6 +45,8 @@ tm.define("KiraraOnStage", {
             });
         kirara.rolling = false;
 
+        var test = tm.hybrid.Mesh("gradriel").addChildTo(this);
+
         // tweenerも使える
         kirara.tweener.clear()
             .to({ scaleY: 0.9 }, 300, "easeInBack")
