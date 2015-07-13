@@ -79,7 +79,7 @@
             for (var i = 0, len = this._rawMeshes.length; i < len; i++) {
                 var mesh = this._rawMeshes[i];
                 var list = mesh.convert(this._rawMaterials);
-                for (var j = 0, len = list.length; j < len; j++) {
+                for (var j = 0, len2 = list.length; j < len2; j++) {
                     this.meshes.push(list[j]);
                 }
             }
