@@ -62,16 +62,16 @@
         },
 
         parse: function(data) {
+            // マテリアル
+            var materialText = data.match(/^Material [\s\S]*?^\}/m);
+            this._rawMaterials = tm.MQOMaterial(materialText[0]);       //マテリアルチャンクは原則一つ
+
             // オブジェクト
             var objectText = data.match(/^Object [\s\S]*?^\}/gm);
             for (var i = 0, len = objectText.length; i < len; ++i) {
                 var mesh = tm.MQOMesh(objectText[i]);
                 this._rawMeshes.push(mesh);
             }
-
-            // マテリアル
-            var materialText = data.match(/^Material [\s\S]*?^\}/m);
-            this._rawMaterials = tm.MQOMaterial(materialText[0]);       //マテリアルは原則一つ
         },
 
         convert: function(){
