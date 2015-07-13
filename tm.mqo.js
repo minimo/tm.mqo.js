@@ -392,10 +392,11 @@
 
         //マテリアル情報のパース
         parse: function(data) {
-            var infoText    = data.match(/^Material [0-9]* \{\r\n([\s\S]*?)\r\n^\}$/m);
-            var matTextList = infoText[1].split('\n');
+//            var infoText    = data.match(/^Material [0-9]* \{\r\n([\s\S]*?)\r\n^\}$/m);
+//            var matTextList = infoText[1].split('\n');
+            var matTextList = data.split('\n');
 
-            for (var i = 0, len = matTextList.length; i < len; i++) {
+            for (var i = 1, len = matTextList.length-1; i < len; i++) {
                 var mat = {};
                 // トリムっとく
                 var matText = matTextList[i].replace(/^\s+|\s+$/g, "");
