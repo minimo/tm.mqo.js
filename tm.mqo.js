@@ -13,7 +13,6 @@
             this.loadFromURL(path);
         },
 
-        // URLからロード
         loadFromURL: function(path) {
             var modelurl = path.split("/");
             _modelPath = "";
@@ -31,29 +30,19 @@
             var that = this;
         },
 
-        //データからロード
         loadFromData: function(data) {
             this.model = tm.MQOModel(data);
             this.flare("load");
         },
     });
 
-    //ローダーに拡張子登録
     tm.asset.Loader.register("mqo", function(path) {
         return tm.asset.MQO(path);
     });
 
-    /*
-     * メタセコイアモデル
-     */
     tm.define("tm.MQOModel", {
-        //変換後メッシュアレイ
         meshes: [],
-
-        //メッシュアレイ
         _rawMeshes: [],
-
-        //マテリアルアレイ
         _rawMaterials: null,
         
         init: function(data) {
@@ -62,11 +51,9 @@
         },
 
         parse: function(data) {
-            // マテリアル
             var materialText = data.match(/^Material [\s\S]*?^\}/m);
-            this._rawMaterials = tm.MQOMaterial(materialText[0]);       //マテリアルチャンクは原則一つ
+            this._rawMaterials = tm.MQOMaterial(materialText[0]);
 
-            // オブジェクト
             var objectText = data.match(/^Object [\s\S]*?^\}/gm);
             for (var i = 0, len = objectText.length; i < len; ++i) {
                 var mesh = tm.MQOMesh(objectText[i]);
@@ -86,63 +73,52 @@
         },
     });
 
-    /*
-     * メタセコイアメッシュ
-     */
     tm.define("tm.MQOMesh", {
-        vertices: [],   // 頂点
-        faces: [],      // 面情報
-        vertNormals: [],// 頂点法線
+        vertices: [],
+        faces: [],
+        vertNormals: [],
         
-        facet: 59.5,    // スムージング角度
+        facet: 59.5,
 
-        mirror: 0,      //ミラーリング
-        mirrorAxis: 0,  //ミラーリング軸
+        mirror: 0,
+        mirrorAxis: 0,
 
         init: function(text) {
             this.parse(text);
         },
 
         parse:function(text){
-            //オブジェクト名
             var name = text.split(' ');
             this.name = name[1].replace(/"/g, "");
 
-            //スムージング角
             var facet = text.match(/facet ([0-9\.]+)/);
             if( facet ){ this.facet = Number(facet[1]); }
 
-            //可視フラグ
             var visible = text.match(/visible ([0-9\.]+)/);
             if( visible ){ this.visible = Number(visible[1]); }
 
-            //ミラーリング
             var mirror = text.match(/mirror ([0-9])/m);
             if( mirror ){
                 this.mirror = Number(mirror[1]);
-                // 軸
+
                 var mirrorAxis = text.match(/mirror_axis ([0-9])/m);
                 if( mirrorAxis ){
                     this.mirrorAxis = Number(mirrorAxis[1]);
                 }
             }
 
-            //頂点情報
             var vertex_txt = text.match(/vertex ([0-9]+).+\{\s([\w\W]+)}$/gm);
             this._parseVertices( RegExp.$1, RegExp.$2 );
 
-            //フェース情報
             var face_txt = text.match(/face ([0-9]+).+\{\s([\w\W]+)}$/gm);
             this._parseFaces( RegExp.$1, RegExp.$2 );
         },
 
         convert: function(materials){
-            //不可視設定の場合は処理をスキップ
             if( this.visible == 0 ){
-                return [];  //空の配列を返す
+                return [];
             }
 
-            //フェースが使用するマテリアルを調べる
             var facemat = [];
             facemat[facemat.length] = this.faces[0].m[0];
             for (var i = 0, lf = this.faces.length; i < lf; i++) {
@@ -153,7 +129,6 @@
                 if( fm != -1 )facemat.push(fm);
             }
 
-            //使用マテリアルに応じてオブジェクトを分割変換
             var meshList = []
             for (var mn = 0; mn < facemat.length; mn++) {
                 var matnum = facemat[mn];
@@ -163,13 +138,7 @@
             return meshList;
         },
 
-        /*
-         * フェース情報からマテリアルに対応した頂点情報を構築
-         * THREE形式専用
-         */
         build: function(num, mqoMat) {
-            //マテリアル情報
-            //シェーダーパラメータによってマテリアルを使い分ける
             var mat = null;
             if(mqoMat.shader == 2) {
                 mat = new THREE.MeshLambertMaterial();
@@ -192,7 +161,6 @@
             mat.shiness = mqoMat.power;
             mat.opacity = mqoMat.col[3]
 
-            //頂点情報
             var scale = 10;
             var geo = new THREE.Geometry();
             for(var i = 0; i < this.vertices.length; i+=3) {
@@ -202,7 +170,6 @@
                     this.vertices[i+2]*scale));
             }
 
-            //インデックス情報
             for (var i = 0, len = this.faces.length; i < len; i++) {
                 var face = this.faces[i];
                 var vIndex = face.v;
@@ -211,9 +178,6 @@
                     var face3 = new THREE.Face3(vIndex[2], vIndex[1], vIndex[0], undefined, undefined, face.m[0]);
                     geo.faces.push(face3);
 
-                    //法線
-
-                    // ＵＶ座標
                     geo.faceVertexUvs[0].push([
                         new THREE.Vector2(face.uv[4], 1.0 - face.uv[5]),
                         new THREE.Vector2(face.uv[2], 1.0 - face.uv[3]),
@@ -222,12 +186,10 @@
                 }
             }
 
-            //メッシュ生成
             var obj = new THREE.Mesh(geo, mat);
             return obj;
         },
 
-        //頂点情報のパース
         _parseVertices: function(num, text) {
             var vertexTextList = text.split('\n');
             for (var i = 1; i <= num; i++) {
@@ -238,7 +200,6 @@
                 this.vertices.push(vertex);
             }
 
-            //ミラーリング対応
             if (this.mirror) {
                 var self = this;
                 var toMirror = (function(){
@@ -255,11 +216,9 @@
             }
         },
 
-        //フェース情報のパース
         _parseFaces: function(num, text) {
             var faceTextList = text.split('\n');
 
-            //法線計算
             var calcNormalize = function(a, b, c) {
                 var v1 = [ a[0] - b[0], a[1] - b[1], a[2] - b[2] ];
                 var v2 = [ c[0] - b[0], c[1] - b[1], c[2] - b[2] ];
@@ -277,9 +236,9 @@
             };
 
             for (var i = 1; i <= num; i++ ){
-                // トリムっとく
+
                 var faceText = faceTextList[i].replace(/^\s+|\s+$/g, "");
-                // 面の数
+
                 var vertex_num = Number(faceText[0]);
 
                 var info = faceText.match(/([A-Za-z]+)\(([\w\s\-\.\(\)]+?)\)/gi);
@@ -294,18 +253,15 @@
                     });
                     face[key] = value;
                 }
-                
-                // UV デフォルト値
+
                 if (!face.uv) {
                     face.uv = [0, 0, 0, 0, 0, 0, 0, 0];
                 }
 
-                // マテリアル デフォルト値
                 if (!face.m) {
                     face.m = [undefined];
                 }
 
-                // 法線（面の場合のみ）
                 if (face.v.length > 2) {
                     face.n = calcNormalize(this.vertices[face.v[0]], this.vertices[face.v[1]], this.vertices[face.v[2]]);
                 }
@@ -313,7 +269,6 @@
                 this.faces.push(face);
             }
 
-            // ミラーリング対応
             if( this.mirror ){
                 var swap = function(a,b){ var temp = this[a]; this[a] = this[b]; this[b] = temp; return this; };
                 var len = this.faces.length;
@@ -342,7 +297,6 @@
                 }
             }
 
-            // 頂点法線を求める
             var vertNormal = Array(this.vertices.length);
             for (var i = 0, len = this.vertices.length; i < len; i++) vertNormal[i] = [];
 
@@ -380,9 +334,7 @@
         },
     });
 
-    /*
-     * メタセコイアマテリアル
-     */
+
     tm.define("tm.MQOMaterial", {
         materials: [],
 
@@ -390,33 +342,32 @@
             this.parse(data);
         },
 
-        //マテリアル情報のパース
         parse: function(data) {
             var infoText    = data.match(/^Material [0-9]* \{\r\n([\s\S]*?)\n^\}$/m);
             var matTextList = infoText[1].split('\n');
 
             for (var i = 0, len = matTextList.length; i < len; i++) {
                 var mat = {};
-                // トリムっとく
-                var matText = matTextList[i].replace(/^\s+|\s+$/g, "");
-                var info = matText.match(/([A-Za-z]+)\(([\w\W]+?)\)/gi);    //マテリアル情報一個分抜く
 
-                var nl = matText.split(' ');    //マテリアル名取得
+                var matText = matTextList[i].replace(/^\s+|\s+$/g, "");
+                var info = matText.match(/([A-Za-z]+)\(([\w\W]+?)\)/gi);
+
+                var nl = matText.split(' ');
                 mat['name'] = nl[0].replace(/"/g, "");
 
                 for( var j = 0, len2 = info.length; j < len2; j++ ){
-                    var m = info[j].match(/([A-Za-z]+)\(([\w\W]+?)\)/); //要素を抜き出す
-                    var key = m[1].toLowerCase();   //文字列小文字化
+                    var m = info[j].match(/([A-Za-z]+)\(([\w\W]+?)\)/);
+                    var key = m[1].toLowerCase();
                     var value = null;
 
                     if( key != "tex" && key != "aplane" ){
-                        //テクスチャ以外の要素
+
                         value = m[2].split(" ");
                         value.forEach(function(elm, i, arr){
                             arr[i] = Number(elm);
                         });
                     }else{
-                        //テクスチャの場合
+
                         value = m[2].replace(/"/g, "");
                     }
                     mat[key] = value;
