@@ -193,9 +193,9 @@
             mat.opacity = mqoMat.col[3];
 
             //頂点情報
-            var scale = 10;
+            var scale = 1;
             var geo = new THREE.Geometry();
-            for(var i = 0; i < this.vertices.length; i+=3) {
+            for(var i = 0; i < this.vertices.length; i++) {
                 var x = this.vertices[i][0]*scale;
                 var y = this.vertices[i][1]*scale;
                 var z = this.vertices[i][2]*scale;
@@ -250,9 +250,9 @@
 
                         // ＵＶ座標
                         geo.faceVertexUvs[0].push([
-                        new THREE.Vector2(face.uv[4], 1.0 - face.uv[5]),
-                        new THREE.Vector2(face.uv[2], 1.0 - face.uv[3]),
-                        new THREE.Vector2(face.uv[0], 1.0 - face.uv[1])]);
+                            new THREE.Vector2(face.uv[4], 1.0 - face.uv[5]),
+                            new THREE.Vector2(face.uv[2], 1.0 - face.uv[3]),
+                            new THREE.Vector2(face.uv[0], 1.0 - face.uv[1])]);
                     }
                     {
                         //フェース情報
@@ -267,9 +267,9 @@
 
                         // ＵＶ座標
                         geo.faceVertexUvs[0].push([
-                        new THREE.Vector2(face.uv[2], 1.0 - face.uv[3]),
-                        new THREE.Vector2(face.uv[0], 1.0 - face.uv[1]),
-                        new THREE.Vector2(face.uv[6], 1.0 - face.uv[7])]);
+                            new THREE.Vector2(face.uv[2], 1.0 - face.uv[3]),
+                            new THREE.Vector2(face.uv[0], 1.0 - face.uv[1]),
+                            new THREE.Vector2(face.uv[6], 1.0 - face.uv[7])]);
                     }
                 }
             }
@@ -281,7 +281,7 @@
 
         //頂点情報のパース
         _parseVertices: function(num, text) {
-            var scale = 1;
+            var scale = 0.1;
             var vertexTextList = text.split('\n');
             for (var i = 1; i <= num; i++) {
                 var vertex = vertexTextList[i].split(' ');
