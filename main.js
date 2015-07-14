@@ -46,11 +46,12 @@ tm.define("KiraraOnStage", {
         kirara.rolling = false;
 
         // tweenerも使える
+/*
         kirara.tweener.clear()
             .to({ scaleY: 0.9 }, 300, "easeInBack")
             .to({ scaleY: 1.0 }, 300, "easeOutBack")
             .setLoop(true);
-
+*/
         // 2Dスプライトとの併用も可能
         var hiyoko = tm.display.Sprite("hiyoko", 32, 32)
             .setScale(4)
