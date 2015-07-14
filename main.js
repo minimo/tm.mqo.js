@@ -13,8 +13,8 @@ tm.main(function() {
 
             hiyoko: "assets/hiyoco_nomal_full.png",
 
-            gradriel: "assets/gradriel_pose.mqo",
-//            test: "assets/test.mqo",
+//            gradriel: "assets/gradriel_pose.mqo",
+            test: "assets/test.mqo",
         },
         nextScene: KiraraOnStage,
     }));
@@ -38,7 +38,7 @@ tm.define("KiraraOnStage", {
             });
 
         // メッシュを表示する
-        var kirara = tm.hybrid.Mesh("gradriel") // Spriteっぽく使える
+        var kirara = tm.hybrid.Mesh("test") // Spriteっぽく使える
             .addChildTo(this)
             .on("enterframe", function() {
                 if (this.rolling) this.rotationY += 10; // Y軸回転
