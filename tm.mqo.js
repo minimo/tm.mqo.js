@@ -236,21 +236,41 @@
                     var nz = face.n[2];
                     var normal =  new THREE.Vector3(nx, ny, nz);
 
-                    //フェース情報
-                    var face3 = new THREE.Face3(vIndex[2], vIndex[1], vIndex[0], normal, undefined, face.m[0]);
+                    //四角を三角に分割
+                    {
+                        //フェース情報
+                        var face3 = new THREE.Face3(vIndex[2], vIndex[1], vIndex[0], normal, undefined, face.m[0]);
 
-                    //頂点法線
-                    face3.vertexNormals.push(normal);
-                    face3.vertexNormals.push(normal);
-                    face3.vertexNormals.push(normal);
+                        //頂点法線
+                        face3.vertexNormals.push(normal);
+                        face3.vertexNormals.push(normal);
+                        face3.vertexNormals.push(normal);
 
-                    geo.faces.push(face3);
+                        geo.faces.push(face3);
 
-                    // ＵＶ座標
-                    geo.faceVertexUvs[0].push([
+                        // ＵＶ座標
+                        geo.faceVertexUvs[0].push([
                         new THREE.Vector2(face.uv[4], 1.0 - face.uv[5]),
                         new THREE.Vector2(face.uv[2], 1.0 - face.uv[3]),
                         new THREE.Vector2(face.uv[0], 1.0 - face.uv[1])]);
+                    }
+                    {
+                        //フェース情報
+                        var face3 = new THREE.Face3(vIndex[1], vIndex[0], vIndex[3], normal, undefined, face.m[0]);
+
+                        //頂点法線
+                        face3.vertexNormals.push(normal);
+                        face3.vertexNormals.push(normal);
+                        face3.vertexNormals.push(normal);
+
+                        geo.faces.push(face3);
+
+                        // ＵＶ座標
+                        geo.faceVertexUvs[0].push([
+                        new THREE.Vector2(face.uv[2], 1.0 - face.uv[3]),
+                        new THREE.Vector2(face.uv[0], 1.0 - face.uv[1]),
+                        new THREE.Vector2(face.uv[6], 1.0 - face.uv[7])]);
+                    }
                 }
             }
 
