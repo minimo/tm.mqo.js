@@ -146,9 +146,9 @@
             var facemat = [];
             facemat[facemat.length] = this.faces[0].m[0];
             for (var i = 0, lf = this.faces.length; i < lf; i++) {
-                var fm = -1;
+                var fm = this.faces[i].m[0];
                 for (var j = 0, lfm = facemat.length; j < lfm; j++) {
-                    if( facemat[j] != this.faces[i].m[0] )fm = this.faces[i].m[0];
+                    if( facemat[j] == this.faces[i].m[0] )fm = -1;
                 }
                 if( fm != -1 )facemat.push(fm);
             }
