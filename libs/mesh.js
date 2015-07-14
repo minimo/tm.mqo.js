@@ -19,6 +19,9 @@
                         this.superInit(asset.mesh.clone());
                     } else if (asset instanceof tm.asset.MQO) {
                         this.superInit(asset.model.meshes[0]);
+                        for (var i = 1; i < asset.model.meshes.length; i++) {
+                            tm.hybrid.Mesh(asset.model.meshes[i]).addChildTo(this);
+                        }
                     }
                 } else {
                     console.error("アセット'{0}'がないよ".format(mesh));
