@@ -214,8 +214,11 @@
                     var nz = face.n[2];
                     var normal =  new THREE.Vector3(nx, ny, nz);
 
+                    //頂点色
+                    var color = new THREE.Color("rgb(128,128,128)");
+
                     //フェース情報
-                    var face3 = new THREE.Face3(vIndex[2], vIndex[1], vIndex[0], normal, undefined, face.m[0]);
+                    var face3 = new THREE.Face3(vIndex[2], vIndex[1], vIndex[0], normal, color, face.m[0]);
 
                     //頂点法線
                     face3.vertexNormals.push(normal);
@@ -239,7 +242,7 @@
                     //四角を三角に分割
                     {
                         //フェース情報
-                        var face3 = new THREE.Face3(vIndex[2], vIndex[1], vIndex[0], normal, undefined, face.m[0]);
+                        var face3 = new THREE.Face3(vIndex[3], vIndex[2], vIndex[1], normal, undefined, face.m[0]);
 
                         //頂点法線
                         face3.vertexNormals.push(normal);
@@ -250,9 +253,9 @@
 
                         // ＵＶ座標
                         geo.faceVertexUvs[0].push([
+                            new THREE.Vector2(face.uv[6], 1.0 - face.uv[7]),
                             new THREE.Vector2(face.uv[4], 1.0 - face.uv[5]),
-                            new THREE.Vector2(face.uv[2], 1.0 - face.uv[3]),
-                            new THREE.Vector2(face.uv[0], 1.0 - face.uv[1])]);
+                            new THREE.Vector2(face.uv[2], 1.0 - face.uv[3])]);
                     }
                     {
                         //フェース情報
