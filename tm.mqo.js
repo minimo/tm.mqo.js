@@ -286,8 +286,9 @@
         _parseVertices: function(num, text) {
             var scale = 0.1;
             var vertexTextList = text.split('\n');
-            for (var i = 1; i <= num; i++) {
+            for (var i = 0; i <= num; i++) {
                 var vertex = vertexTextList[i].split(' ');
+                if (vertex.length < 3)continue;
                 vertex[0] = Number(vertex[0])*scale;
                 vertex[1] = Number(vertex[1])*scale;
                 vertex[2] = Number(vertex[2])*scale;
@@ -332,7 +333,7 @@
                 return v3;
             };
 
-            for (var i = 1; i <= num; i++ ){
+            for (var i = 0; i <= num; i++ ){
                 // トリムっとく
                 var faceText = faceTextList[i].replace(/^\s+|\s+$/g, "");
                 // 面の数
