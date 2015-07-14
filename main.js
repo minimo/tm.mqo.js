@@ -13,8 +13,8 @@ tm.main(function() {
 
             hiyoko: "assets/hiyoco_nomal_full.png",
 
-            gradriel: "assets/gradriel_pose.mqo",
-//            test: "assets/geometry.mqo",
+//            gradriel: "assets/gradriel_pose.mqo",
+            test: "assets/test.mqo",
         },
         nextScene: KiraraOnStage,
     }));
@@ -45,7 +45,7 @@ tm.define("KiraraOnStage", {
             });
         kirara.rolling = false;
 
-        var test = tm.hybrid.Mesh("gradriel").addChildTo(this);
+        var test = tm.hybrid.Mesh("test").addChildTo(this);
 
         // tweenerも使える
         kirara.tweener.clear()
