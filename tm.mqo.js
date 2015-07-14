@@ -181,8 +181,9 @@
             var r = mqoMat.col[0];
             var g = mqoMat.col[1];
             var b = mqoMat.col[2];
-            if (mat.color) mat.color.setRGB(r*mqoMat.dif, g*mqoMat.dif, b*mqoMat.dif);
-            if (mat.emissive) mat.emissive.setRGB(r*mqoMat.emi, g*mqoMat.emi, b*mqoMat.emi);
+//            if (mat.color) mat.color.setRGB(r*mqoMat.dif, g*mqoMat.dif, b*mqoMat.dif);
+            if (mat.color) mat.color.setRGB(r, g, b);
+            if (mat.emissive) mat.emissive.setRGB(r*mqoMat.emi*0.1, g*mqoMat.emi*0.1, b*mqoMat.emi*0.1);
             if (mat.ambient) mat.ambient.setRGB(r*mqoMat.amb, g*mqoMat.amb, b*mqoMat.amb);
             if (mat.specular) mat.specular.setRGB(r*mqoMat.spc, g*mqoMat.spc, b*mqoMat.spc);
             if (mqoMat.tex) {
@@ -214,11 +215,8 @@
                     var nz = face.n[2];
                     var normal =  new THREE.Vector3(nx, ny, nz);
 
-                    //頂点色
-                    var color = new THREE.Color("rgb(128,128,128)");
-
                     //フェース情報
-                    var face3 = new THREE.Face3(vIndex[2], vIndex[1], vIndex[0], normal, color, face.m[0]);
+                    var face3 = new THREE.Face3(vIndex[2], vIndex[1], vIndex[0], normal, undefined, face.m[0]);
 
                     //頂点法線
                     face3.vertexNormals.push(normal);
