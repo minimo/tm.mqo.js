@@ -90,6 +90,8 @@
      * メタセコイアメッシュ
      */
     tm.define("tm.MQOMesh", {
+        name: "",   //メッシュ名
+
         vertices: [],   // 頂点
         faces: [],      // 面情報
         vertNormals: [],// 頂点法線
@@ -158,7 +160,7 @@
             for (var mn = 0; mn < facemat.length; mn++) {
                 var matnum = facemat[mn];
                 var sp = this.build(matnum, materials.materials[matnum]);
-                meshList.push(sp);
+                if (sp) meshList.push(sp);
             }
             return meshList;
         },
@@ -168,10 +170,13 @@
          * THREE形式専用
          */
         build: function(num, mqoMat) {
+            if (!mqoMat)return null;
             //マテリアル情報
             //シェーダーパラメータによってマテリアルを使い分ける
             var mat = null;
-            if(mqoMat.shader == 2) {
+            if(mqoMat.shader === undefined) {
+                mat = new THREE.MeshPhongMaterial();
+            } else if(mqoMat.shader == 2) {
                 mat = new THREE.MeshLambertMaterial();
             } else if(mqoMat.shader == 3) {
                 mat = new THREE.MeshPhongMaterial();
@@ -206,6 +211,8 @@
             //インデックス情報
             for (var i = 0, len = this.faces.length; i < len; i++) {
                 var face = this.faces[i];
+                if (face.m != num) continue;
+
                 var vIndex = face.v;
                 var index = geo.vertices.length;
                 if (face.vNum == 3) {
