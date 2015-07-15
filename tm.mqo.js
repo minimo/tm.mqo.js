@@ -219,6 +219,7 @@
             for (var i = 0, len = this.faces.length; i < len; i++) {
                 var face = this.faces[i];
                 if (face.m != num) continue;
+                if (face.vNum < 3) continue;
 
                 var vIndex = face.v;
                 var index = geo.vertices.length;
