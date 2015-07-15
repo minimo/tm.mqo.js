@@ -57,6 +57,9 @@
         _rawMaterials: null,
         
         init: function(data) {
+            this.meshes = [];
+            this._rawMeshes = [];
+            this._rawMaterials = null;
             this.parse(data);
             this.convert();
         },
@@ -461,6 +464,7 @@
         materials: [],
 
         init: function(data) {
+            this.materials = [];
             this.parse(data);
         },
 
