@@ -170,33 +170,40 @@
          * THREE形式専用
          */
         build: function(num, mqoMat) {
-            if (!mqoMat)return null;
             //マテリアル情報
-            //シェーダーパラメータによってマテリアルを使い分ける
             var mat = null;
-            if(mqoMat.shader === undefined) {
-                mat = new THREE.MeshPhongMaterial();
-            } else if(mqoMat.shader == 2) {
-                mat = new THREE.MeshLambertMaterial();
-            } else if(mqoMat.shader == 3) {
-                mat = new THREE.MeshPhongMaterial();
-            } else  {
+            if (mqoMat) {
+                //シェーダーパラメータによってマテリアルを使い分ける
+                if(mqoMat.shader === undefined) {
+                    mat = new THREE.MeshPhongMaterial();
+                } else if(mqoMat.shader == 2) {
+                    mat = new THREE.MeshLambertMaterial();
+                } else if(mqoMat.shader == 3) {
+                    mat = new THREE.MeshPhongMaterial();
+                } else  {
+                    mat = new THREE.MeshBasicMaterial();
+                }
+                var r = mqoMat.col[0];
+                var g = mqoMat.col[1];
+                var b = mqoMat.col[2];
+//                if (mat.color) mat.color.setRGB(r*mqoMat.dif, g*mqoMat.dif, b*mqoMat.dif);
+                if (mat.color) mat.color.setRGB(r, g, b);
+                if (mat.emissive) mat.emissive.setRGB(r*mqoMat.emi*0.1, g*mqoMat.emi*0.1, b*mqoMat.emi*0.1);
+                if (mat.ambient) mat.ambient.setRGB(r*mqoMat.amb, g*mqoMat.amb, b*mqoMat.amb);
+                if (mat.specular) mat.specular.setRGB(r*mqoMat.spc, g*mqoMat.spc, b*mqoMat.spc);
+                if (mqoMat.tex) {
+                    mat.map = THREE.ImageUtils.loadTexture(_modelPath+"/"+mqoMat.tex);
+                }
+                mat.transparent = true;
+                mat.shiness = mqoMat.power;
+                mat.opacity = mqoMat.col[3];
+            } else {
+                //デフォルトマテリアル
                 mat = new THREE.MeshBasicMaterial();
+                mat.color.setRGB(0.7, 0.7, 0.7);
+                mat.transparent = true;
+                mat.shiness = 1.0;
             }
-            var r = mqoMat.col[0];
-            var g = mqoMat.col[1];
-            var b = mqoMat.col[2];
-//            if (mat.color) mat.color.setRGB(r*mqoMat.dif, g*mqoMat.dif, b*mqoMat.dif);
-            if (mat.color) mat.color.setRGB(r, g, b);
-            if (mat.emissive) mat.emissive.setRGB(r*mqoMat.emi*0.1, g*mqoMat.emi*0.1, b*mqoMat.emi*0.1);
-            if (mat.ambient) mat.ambient.setRGB(r*mqoMat.amb, g*mqoMat.amb, b*mqoMat.amb);
-            if (mat.specular) mat.specular.setRGB(r*mqoMat.spc, g*mqoMat.spc, b*mqoMat.spc);
-            if (mqoMat.tex) {
-                mat.map = THREE.ImageUtils.loadTexture(_modelPath+"/"+mqoMat.tex);
-            }
-            mat.transparent = true;
-            mat.shiness = mqoMat.power;
-            mat.opacity = mqoMat.col[3];
 
             //頂点情報
             var scale = 1;
