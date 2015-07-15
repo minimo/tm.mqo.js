@@ -102,6 +102,9 @@
         mirrorAxis: 0,  //ミラーリング軸
 
         init: function(text) {
+            this.vertices = [];
+            this.faces = [];
+            this.vertNormals = [];
             this.parse(text);
         },
 
