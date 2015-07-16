@@ -306,9 +306,9 @@
                     {
                         //フェース情報
                         var index = [];
-                        index[0] = vIndex[3];
-                        index[1] = vIndex[2];
-                        index[2] = vIndex[1];
+                        index[0] = vIndex[1];
+                        index[1] = vIndex[0];
+                        index[2] = vIndex[3];
                         for (var j = 0; j < 3; j++) {
                             var v = this.vertices[index[j]];
                             if (v.to != -1) {
@@ -340,12 +340,15 @@
 
             //頂点情報
             var scale = 1;
+            this.vertices.sort(function(a, b) {
+                return a.to - b.to;
+            });
             for(var i = 0; i < this.vertices.length; i++) {
                 var v = this.vertices[i];
                 if (v.to != -1) {
-                    var x = v[0]*scale;
-                    var y = v[1]*scale;
-                    var z = v[2]*scale;
+                    var x = v.x*scale;
+                    var y = v.y*scale;
+                    var z = v.z*scale;
                     geo.vertices.push(new THREE.Vector3(x, y, z));
                 }
             }
@@ -362,10 +365,11 @@
             for (var i = 0; i <= num; i++) {
                 var vertex = vertexTextList[i].split(' ');
                 if (vertex.length < 3)continue;
-                vertex[0] = Number(vertex[0])*scale;
-                vertex[1] = Number(vertex[1])*scale;
-                vertex[2] = Number(vertex[2])*scale;
-                this.vertices.push(vertex);
+                var v = {};
+                v.x = Number(vertex[0])*scale;
+                v.y = Number(vertex[1])*scale;
+                v.z = Number(vertex[2])*scale;
+                this.vertices.push(v);
             }
 
             //ミラーリング対応
