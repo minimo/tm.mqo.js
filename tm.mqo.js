@@ -211,15 +211,14 @@
                 mat.shiness = 1.0;
             }
 
-            //頂点情報
-            var scale = 1;
+            //ジオメトリ情報
             var geo = new THREE.Geometry();
+
+            //頂点情報初期化
             for(var i = 0; i < this.vertices.length; i++) {
-                var x = this.vertices[i][0]*scale;
-                var y = this.vertices[i][1]*scale;
-                var z = this.vertices[i][2]*scale;
-                geo.vertices.push(new THREE.Vector3(x, y, z));
+                this.vertices[i].to = -1;
             }
+            var countVertex = 0;
 
             //インデックス情報
             for (var i = 0, len = this.faces.length; i < len; i++) {
@@ -228,7 +227,6 @@
                 if (face.vNum < 3) continue;
 
                 var vIndex = face.v;
-                var index = geo.vertices.length;
                 if (face.vNum == 3) {
                     //法線
                     var nx = face.n[0];
@@ -237,7 +235,21 @@
                     var normal =  new THREE.Vector3(nx, ny, nz);
 
                     //フェース情報
-                    var face3 = new THREE.Face3(vIndex[2], vIndex[1], vIndex[0], normal, undefined, face.m[0]);
+                    var index = [];
+                    index[0] = vIndex[2];
+                    index[1] = vIndex[1];
+                    index[2] = vIndex[0];
+                    for (var j = 0; j < 3; j++) {
+                        var v = this.vertices[index[j]];
+                        if (v.to != -1) {
+                            index[j] = v.to;
+                        } else {
+                            v.to = countVertex;
+                            index[j] = v.to;
+                            countVertex++;
+                        }
+                    }
+                    var face3 = new THREE.Face3(index[0], index[1], index[2], normal, undefined, face.m[0]);
 
                     //頂点法線
                     face3.vertexNormals.push(normal);
@@ -261,7 +273,22 @@
                     //四角を三角に分割
                     {
                         //フェース情報
-                        var face3 = new THREE.Face3(vIndex[3], vIndex[2], vIndex[1], normal, undefined, face.m[0]);
+                        var index = [];
+                        index[0] = vIndex[3];
+                        index[1] = vIndex[2];
+                        index[2] = vIndex[1];
+                        for (var j = 0; j < 3; j++) {
+                            var v = this.vertices[index[j]];
+                            if (v.to != -1) {
+                                index[j] = v.to;
+                            } else {
+                                v.to = countVertex;
+                                index[j] = v.to;
+                                countVertex++;
+                            }
+                        }
+                        var face3 = new THREE.Face3(index[0], index[1], index[2], normal, undefined, face.m[0]);
+//                        var face3 = new THREE.Face3(vIndex[3], vIndex[2], vIndex[1], normal, undefined, face.m[0]);
 
                         //頂点法線
                         face3.vertexNormals.push(normal);
@@ -278,7 +305,22 @@
                     }
                     {
                         //フェース情報
-                        var face3 = new THREE.Face3(vIndex[1], vIndex[0], vIndex[3], normal, undefined, face.m[0]);
+                        var index = [];
+                        index[0] = vIndex[3];
+                        index[1] = vIndex[2];
+                        index[2] = vIndex[1];
+                        for (var j = 0; j < 3; j++) {
+                            var v = this.vertices[index[j]];
+                            if (v.to != -1) {
+                                index[j] = v.to;
+                            } else {
+                                v.to = countVertex;
+                                index[j] = v.to;
+                                countVertex++;
+                            }
+                        }
+                        var face3 = new THREE.Face3(index[0], index[1], index[2], normal, undefined, face.m[0]);
+//                        var face3 = new THREE.Face3(vIndex[1], vIndex[0], vIndex[3], normal, undefined, face.m[0]);
 
                         //頂点法線
                         face3.vertexNormals.push(normal);
@@ -293,6 +335,18 @@
                             new THREE.Vector2(face.uv[0], 1.0 - face.uv[1]),
                             new THREE.Vector2(face.uv[6], 1.0 - face.uv[7])]);
                     }
+                }
+            }
+
+            //頂点情報
+            var scale = 1;
+            for(var i = 0; i < this.vertices.length; i++) {
+                var v = this.vertices[i];
+                if (v.to != -1) {
+                    var x = v[0]*scale;
+                    var y = v[1]*scale;
+                    var z = v[2]*scale;
+                    geo.vertices.push(new THREE.Vector3(x, y, z));
                 }
             }
 
