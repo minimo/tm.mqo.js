@@ -13,7 +13,7 @@ tm.main(function() {
 
             hiyoko: "assets/hiyoco_nomal_full.png",
 
-            gradriel: "assets/raguna00.mqo",
+            gradriel: "assets/gradriel_pose.mqo",
 //            test: "assets/test.mqo",
         },
         nextScene: KiraraOnStage,
