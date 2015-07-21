@@ -353,6 +353,12 @@
                 }
             }
 
+
+            //各種情報計算
+            geo.computeBoundingBox();
+            geo.computeFaceNormals();
+            geo.computeVertexNormals();
+
             //メッシュ生成
             var obj = new THREE.Mesh(geo, mat);
             return obj;
