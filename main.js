@@ -26,7 +26,7 @@ tm.define("KiraraOnStage", {
         this.superInit();
 
         // カメラ調整
-        this.camera.setPosition(0, 20, 50);
+        this.camera.setPosition(0, 20, 30);
         this.camera.lookAt(new THREE.Vector3(0, 10, 0));
         
         // ライトを動かす
