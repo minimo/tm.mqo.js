@@ -11,7 +11,7 @@ Scene {
 	amb 0.250 0.250 0.250
 }
 Material 1 {
-	"Surface0" shader(3) col(1.000 1.000 1.000 1.000) dif(0.250) amb(0.600) emi(0.750) spc(0.000) power(0.00) tex("gradriel_tex.png")
+	"Surface0" shader(3) col(1.000 1.000 1.000 1.000) dif(0.250) amb(0.200) emi(0.750) spc(0.000) power(0.00) tex("gradriel_tex.bmp") aplane("gradriel_alpha.bmp")
 }
 Object "body" {
 	visible 15

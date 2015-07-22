@@ -17,8 +17,8 @@ Util = tm.createClass({
         //アセット読み込みシーン
         var loadingScene = LoadingScene({
             assets: {
-                tex: "gradriel_tex.png",
-                aplane: "gradriel_alpha.png"
+                tex: "gradriel_tex.bmp",
+                aplane: "gradriel_alpha.bmp"
             },
             width: SC_W,
             height: SC_H,
@@ -50,12 +50,7 @@ Util = tm.createClass({
         for (var i = 0; i < len; i++) {
             var p1 = bm1.getPixelIndex(i);
             var p2 = bm2.getPixelIndex(i);
-            if (p2[0] == 0) {
-                p1[0] = 0;
-                p1[1] = 0;
-                p1[2] = 0;
-                p1[3] = 0;
-            }
+            p1[3] = p2[0];
             bm1.setPixel32Index(i, p1[0], p1[1], p1[2], p1[3]);
         }
 
