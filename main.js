@@ -40,8 +40,32 @@ tm.define("KiraraOnStage", {
         // メッシュを表示する
         var kirara = tm.hybrid.Mesh("gradriel") // Spriteっぽく使える
             .addChildTo(this)
-            .on("enterframe", function() {
+            .on("enterframe", function(e) {
                 if (this.rolling) this.rotationY += 10; // Y軸回転
+
+                // スワイプでくるくるまわす
+                var p = e.app.pointing;
+                if (p.getPointing()) {
+                    this.vy = p.deltaPosition.x * 0.01;
+                    this.rotation.y += this.vy;
+                    this.vx = p.deltaPosition.y * 0.01;
+                    this.rotation.x += this.vx;
+                } else {
+                    if (this.vy) {
+                        this.rotation.y += this.vy;
+                        this.vy *= 0.95;
+                        if (Math.abs(this.vy) < 0.1) {
+                            this.vy = 0;
+                        }
+                    }
+                    if (this.vx) {
+                        this.rotation.x += this.vx;
+                        this.vx *= 0.95;
+                        if (Math.abs(this.vx) < 0.1) {
+                            this.vx = 0;
+                        }
+                    }
+                }
             });
         kirara.rolling = false;
 
