@@ -200,6 +200,9 @@
                 if (mqoMat.tex) {
                     mat.map = THREE.ImageUtils.loadTexture(_modelPath+"/"+mqoMat.tex);
                 }
+                if (mqoMat.aplane) {
+                    mat.alphaMap = THREE.ImageUtils.loadTexture(_modelPath+"/"+mqoMat.aplane);
+                }
                 mat.transparent = true;
                 mat.shiness = mqoMat.power;
                 mat.opacity = mqoMat.col[3];
