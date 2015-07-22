@@ -36,7 +36,6 @@ Util = tm.createClass({
         var tex = tm.asset.AssetManager.get("tex");
         var aplane = tm.asset.AssetManager.get("aplane");
 
-        //瀕死用ビットマップ作成
         var canvas1 = tm.graphics.Canvas();
         canvas1.resize(tex.width, tex.height);
         canvas1.drawTexture(tex, 0, 0);
@@ -52,6 +51,9 @@ Util = tm.createClass({
             var p1 = bm1.getPixelIndex(i);
             var p2 = bm2.getPixelIndex(i);
             if (p2[0] == 0) {
+                p1[0] = 0;
+                p1[1] = 0;
+                p1[2] = 0;
                 p1[3] = 0;
             }
             bm1.setPixel32Index(i, p1[0], p1[1], p1[2], p1[3]);
