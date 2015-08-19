@@ -11,10 +11,12 @@ tm.main(function() {
                 url: "assets/kirara.json",
             },
 
-            hiyoko: "assets/hiyoco_nomal_full.png",
+            hiyoko:     "assets/hiyoco_nomal_full.png",
 
-            gradriel: "assets/gradriel_pose.mqo",
-//            test: "assets/test.mqo",
+            gradriel:   "assets/gradriel_pose.mqo",
+            fossil:     "assets/iron_fossil.mqo",
+            r9:         "assets/R-9C.mqo",
+            silverhawk: "assets/silverhawk.mqo",
         },
         nextScene: KiraraOnStage,
     }));
@@ -38,36 +40,12 @@ tm.define("KiraraOnStage", {
             });
 
         // メッシュを表示する
-        var kirara = tm.hybrid.Mesh("gradriel") // Spriteっぽく使える
+        this.kirara = tm.hybrid.Mesh("silverhawk") // Spriteっぽく使える
             .addChildTo(this)
-            .on("enterframe", function(e) {
-                if (this.rolling) this.rotationY += 10; // Y軸回転
 
-                // スワイプでくるくるまわす
-                var p = e.app.pointing;
-                if (p.getPointing()) {
-                    this.vy = p.deltaPosition.x * 0.01;
-                    this.rotation.y += this.vy;
-                    this.vx = p.deltaPosition.y * 0.01;
-                    this.rotation.x += this.vx;
-                } else {
-                    if (this.vy) {
-                        this.rotation.y += this.vy;
-                        this.vy *= 0.95;
-                        if (Math.abs(this.vy) < 0.1) {
-                            this.vy = 0;
-                        }
-                    }
-                    if (this.vx) {
-                        this.rotation.x += this.vx;
-                        this.vx *= 0.95;
-                        if (Math.abs(this.vx) < 0.1) {
-                            this.vx = 0;
-                        }
-                    }
-                }
-            });
-        kirara.rolling = false;
+        //メッシュリスト
+        var meshCount = 0;
+        var meshList = ["gradriel", "fossil", "r9", "silverhawk"];
 
         // tweenerも使える
 /*
@@ -93,12 +71,42 @@ tm.define("KiraraOnStage", {
         hiyoko.vx = 1;
         hiyoko.vy = 1;
 
-        tm.ui.FlatButton({ text: "かいてん" })
+        var that = this;
+        tm.ui.FlatButton({ text: "きりかえ" })
             .setPosition(320, 100)
             .addChildTo(this)
             .on("push", function() {
-                kirara.rolling = !kirara.rolling;
-                this.label.text = kirara.rolling ? "とまる" : "かいてん";
+                meshCount++;
+                meshCount %= meshList.length;
+//                that.kirara.remove();
+                var name = meshList[meshCount];
+                that.kirara = tm.hybrid.Mesh("fossil").addChildTo(this);
             });
-    }
+    },
+
+    update: function(e) {
+        // スワイプでくるくるまわす
+        var p = e.pointing;
+        if (p.getPointing()) {
+            this.kirara.vy = p.deltaPosition.x * 0.01;
+            this.kirara.rotation.y += this.kirara.vy;
+            this.kirara.vx = p.deltaPosition.y * 0.01;
+            this.kirara.rotation.x += this.kirara.vx;
+        } else {
+            if (this.kirara.vy) {
+                this.kirara.rotation.y += this.kirara.vy;
+                this.kirara.vy *= 0.95;
+                if (Math.abs(this.kirara.vy) < 0.1) {
+                    this.kirara.vy = 0;
+                }
+            }
+            if (this.kirara.vx) {
+                this.kirara.rotation.x += this.kirara.vx;
+                this.kirara.vx *= 0.95;
+                if (Math.abs(this.kirara.vx) < 0.1) {
+                    this.kirara.vx = 0;
+                }
+            }
+        }
+    },
 });
